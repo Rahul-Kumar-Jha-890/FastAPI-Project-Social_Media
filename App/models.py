@@ -4,7 +4,7 @@
 #models.py = What the database tables look like.
 
 from .database import Base
-from sqlalchemy import Integer,Column,String,Boolean,DateTime
+from sqlalchemy import Integer,Column,String,Boolean,DateTime,ForeignKey
 from datetime import datetime,timezone
 from sqlalchemy.sql.expression import null
 from sqlalchemy.sql import func
@@ -15,13 +15,14 @@ class Post(Base):
     id = Column(Integer,primary_key = True,nullable = False)
     title = Column(String,nullable = False)
     content = Column(String,nullable = False)
-    published = Column(Boolean,default = True)
+    published = Column(Boolean,default = True, nullable=False)
     
     created_at = Column(
     DateTime(timezone=True),
     nullable=False,
     server_default=func.now()
 )
+    owner_id = Column(Integer,ForeignKey("users.id", ondelete="CASCADE"),nullable = False)
 
 class Users(Base):
      __tablename__ = "users"

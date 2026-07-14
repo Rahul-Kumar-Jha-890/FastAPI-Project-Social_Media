@@ -1,0 +1,26 @@
+USER LOGIN PROCESS:-
+
+User logs in
+Server verifies email and password.
+Server returns a JWT.
+Client stores the JWT
+Usually in local storage, cookies, or memory.
+
+Client sends the JWT with every protected request
+
+Authorization: Bearer <access_token>
+FastAPI reads the token
+Extracts it from the Authorization header using OAuth2PasswordBearer.
+Verify the token
+Decode the JWT.
+Check the signature, expiration, and extract user_id.
+Fetch the user
+Use the user_id from the token to get the user from the database.
+Grant or deny access
+If the token is valid → execute the endpoint.
+If invalid or expired → return 401 Unauthorized.
+
+Why use JWT once we already loffed in??
+Ans) The server verifies every request because HTTP is stateless—it does not 
+remember that you logged in previously. The JWT is the proof that you're 
+the same authenticated user making the new request.
