@@ -4,6 +4,7 @@
 #models.py = What the database tables look like.
 
 from .database import Base
+from sqlalchemy.orm import relationship
 from sqlalchemy import Integer,Column,String,Boolean,DateTime,ForeignKey
 from datetime import datetime,timezone
 from sqlalchemy.sql.expression import null
@@ -23,6 +24,7 @@ class Post(Base):
     server_default=func.now()
 )
     owner_id = Column(Integer,ForeignKey("users.id", ondelete="CASCADE"),nullable = False)
+    owner = relationship("Users")
 
 class Users(Base):
      __tablename__ = "users"
