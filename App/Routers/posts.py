@@ -9,7 +9,7 @@ router = APIRouter(prefix="/posts", tags=["Posts"])
 
 @router.get("/",response_model=List[schemas.Post]) #Without response_model, FastAPI works but loses data validation, auto-docs, and type safety - your endpoint returns data but FastAPI won't validate or properly document the response structure.
 def test_posts(db:Session = Depends(get_db), user_id :int = Depends(oauth2.get_current_user),
-               limit:int = 10, skip : int =0, search: Optional[str] = ""):  #For pagination.
+               limit:int = 10, skip : int =0, search: Optional[str] = ""):  #Rate Limiter(For pagination.)
     
     get_post = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
 

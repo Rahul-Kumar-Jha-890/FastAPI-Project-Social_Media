@@ -3,6 +3,7 @@ from datetime import datetime,timedelta
 from. import schemas
 from fastapi import Depends,HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from .config import settings
 
 #OAuth2PasswordBearer automatically extracts the JWT from the Authorization: 
 # Bearer <token> header and passes it to your function, while tokenUrl="login" tells FastAPI where clients obtain that token.
@@ -10,9 +11,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
 #For token genration we need secret key, algorith and expiry time.
 
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = settings.access_key
+ALGORITHM = settings.algorithm
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.access_token_expire_minutes
 
 #Once hashed pwd and pwd sent by the client is verified, server generates the JWT which the client stores in its local storage.
 def create_access_token(data : dict):
