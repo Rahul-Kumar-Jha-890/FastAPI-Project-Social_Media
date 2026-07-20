@@ -20,6 +20,12 @@ class Post(PostBase):
     class Config:
         orm_mode = True
 
+class PostOut(BaseModel):
+    Post : Post
+    Votes:int
+    class Config:
+        orm_mode = True
+
 class CreateUser(BaseModel):
     email : EmailStr
     password : str

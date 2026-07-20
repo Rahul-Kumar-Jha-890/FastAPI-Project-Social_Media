@@ -3,22 +3,25 @@ from.. import models,schemas,oauth2
 from ..database import engine,get_db
 from sqlalchemy.orm import Session
 from typing import List,Optional
+from sqlalchemy import func
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@router.get("/",response_model=List[schemas.Post]) #Without response_model, FastAPI works but loses data validation, auto-docs, and type safety - your endpoint returns data but FastAPI won't validate or properly document the response structure.
+@router.get("/",response_model=List[schemas.PostOut]) #Without response_model, FastAPI works but loses data validation, auto-docs, and type safety - your endpoint returns data but FastAPI won't validate or properly document the response structure.
 def test_posts(db:Session = Depends(get_db), user_id :int = Depends(oauth2.get_current_user),
                limit:int = 10, skip : int =0, search: Optional[str] = ""):  #Rate Limiter(For pagination.)
     
-    get_post = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
+    #get_post = db.query(models.Post, func.count(models.Vote.post_id).label("Votes")).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
 
+    get_post = db.query(models.Post, func.count(models.Vote.post_id).label("Votes")).join(models.Vote, models.Post.id == models.Vote.post_id, isouter=True). group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
     return get_post
 
-@router.get("/{id}",response_model=schemas.Post)  #Get post by id
+@router.get("/{id}",response_model=schemas.PostOut)  #Get post by id
 def get_post(id:int, db:Session = Depends(get_db), user_id :int = Depends(oauth2.get_current_user)):
 
-    post = db.query(models.Post).filter(models.Post.id == id).first()
+   # post = db.query(models.Post).filter(models.Post.id == id).first()
+    post = db.query(models.Post, func.count(models.Vote.post_id).label("Votes")).join(models.Vote, models.Post.id == models.Vote.post_id, isouter=True). group_by(models.Post.id).filter(models.Post.id == id).first()
     if not post:
         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND,
                             detail = f"Post with id {id} was not found.")
