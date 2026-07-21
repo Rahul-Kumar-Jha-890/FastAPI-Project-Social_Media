@@ -6,6 +6,8 @@ from sqlalchemy import pool
 from alembic import context
 from App.models import Base
 from App.config import settings
+
+#Alembic only detects changes that are reflected in your SQLAlchemy models
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

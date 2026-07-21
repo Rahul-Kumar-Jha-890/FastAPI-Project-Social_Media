@@ -1,0 +1,24 @@
+
+services:   #Defines all the containers (services) your application will run.
+  api:
+    build: .
+    ports:
+      - "8000:8000"  #Maps port 8000 on your computer to port 8000 inside the container.
+    volumes:
+      - ./:/usr/src/app  #Mounts your project folder into the container for real time updation.
+    env_file:
+      - .env.docker
+    depends_on:  #Starts the PostgreSQL container before the API container.
+      - postgres
+
+  postgres:
+    image: postgres:17
+    environment:
+       POSTGRES_DB: ${DATABASE_NAME}
+       POSTGRES_USER: ${DATABASE_USER}
+       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - postgres-db:/var/lib/postgresql/data  #Stores the database data in a Docker volume.
+
+volumes:
+  postgres-db:

@@ -24,3 +24,41 @@ Why use JWT once we already loffed in??
 Ans) The server verifies every request because HTTP is stateless—it does not 
 remember that you logged in previously. The JWT is the proof that you're 
 the same authenticated user making the new request.
+
+#DOCKERIZING the app.
+Dockerfile
+      │
+      ▼
+docker build
+      │
+      ▼
+Docker Image
+      │
+docker run / docker compose up
+      │
+      ▼
+Docker Container (Running Application)
+
+# Build an image
+docker build -t fastapi .
+
+# View images
+docker images
+
+# Run a container from an image
+docker run fastapi
+
+# View running containers
+docker ps
+
+# View all containers
+docker ps -a
+
+# Stop a container
+docker stop <container_id>
+
+# Remove a container
+docker rm <container_id>
+
+# Remove an image
+docker rmi <image_id>

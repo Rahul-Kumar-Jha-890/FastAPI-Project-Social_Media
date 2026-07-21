@@ -8,6 +8,7 @@ models.Base.metadata.create_all(bind=engine) #Creates all database tables define
 
 
 app = FastAPI()
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -22,3 +23,6 @@ app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(votes.router)
 
+@app.get("/")
+def demo():
+    return {"msg" : "hello world!!!!"}

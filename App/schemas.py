@@ -12,6 +12,14 @@ class PostBase(BaseModel):
 class PostCreate(PostBase):
     pass
 
+class UserOut(BaseModel):  #Pydantic model for data validation.
+    id : int
+    email : EmailStr
+    created_at : datetime
+
+    class Config:
+        orm_mode = True
+
 class Post(PostBase):
     id : int
     created_at : datetime
