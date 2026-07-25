@@ -9,7 +9,7 @@ def vote(vote : schemas.Vote, db: Session = Depends(database.get_db),
          current_user : int = Depends(oauth2.get_current_user)):    
 
 #First check whether the post exists in our Post db or not
-        post =  db.query(models.Post).filter(models.Post.post_id == vote.post_id).first()
+        post =  db.query(models.Post).filter(models.Post.id == vote.post_id).first()
         if not post:
              raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 #models.Vote.post_id → the post_id column in the database. vote.post_id → the post_id received in the request body.

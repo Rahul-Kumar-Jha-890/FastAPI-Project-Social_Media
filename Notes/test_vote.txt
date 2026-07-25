@@ -1,0 +1,44 @@
+test_posts fixture
+       │
+       ▼
+Insert sample posts into the TEST database
+       │
+       ▼
+Return SQLAlchemy Post objects to the test
+       │
+       ▼
+test_vote_on_post()
+       │
+       ▼
+test_posts[0].id  (e.g. 1)
+       │
+       ▼
+POST /vote
+{
+    "post_id": 1,
+    "dir": 1
+}
+       │
+       ▼
+FastAPI /vote endpoint (votes.py)
+       │
+       ▼
+db.query(models.Post)
+.filter(models.Post.id == vote.post_id)
+.first()
+       │
+       ▼
+Query executes on the TEST database
+       │
+       ▼
+Post exists ✔
+       │
+       ▼
+Vote is created
+       │
+       ▼
+Endpoint returns HTTP 201
+       │
+       ▼
+Your test checks:
+assert res.status_code == 201

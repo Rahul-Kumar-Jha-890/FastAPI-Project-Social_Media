@@ -1,7 +1,6 @@
 from App import schemas
 import pytest
 
-#Every test insert 2 posts in our test db.
 def test_get_post(authorized_client,test_posts):
     res = authorized_client.get("/posts")
     #print(res.json())
