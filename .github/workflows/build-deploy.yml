@@ -9,3 +9,11 @@ jobs:
     steps:
       - name: Pull git repository
         uses: actions/checkout@v2  #This downloads (checks out) our GitHub repository into the runner so the workflow has access to your project files.
+      - name : Install python version 3.12
+        uses : actions/setup-python@v2
+        with:
+          python-version: "3.12"
+      - name: Update pip
+        run : python -m pip install --upgrade pip
+      - name : Install all dependencies
+        run : pip install -r requirements.txt
