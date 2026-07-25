@@ -14,7 +14,7 @@ engine = create_engine(SQLALCHEMY_DB_URL )  #manages connections to the database
 
 TestingSessionLocal = sessionmaker(autoflush=False, bind=engine,autocommit = False )
 
-@pytest.fixture(scope="module")  #The database is shared across all tests in the file.
+@pytest.fixture  #The database is shared across all tests in the file.
 def session():
        Base.metadata.drop_all(bind=engine)  #Drop all tables
        Base.metadata.create_all(bind=engine) #Create all tables
@@ -24,7 +24,7 @@ def session():
        finally:       #After test finishes, execution comes back to the fixture.
             db.close()
 
-@pytest.fixture(scope="module")   #Before creating the client fixture, pytest must first create the session fixture
+@pytest.fixture   #Before creating the client fixture, pytest must first create the session fixture
 def client(session ):
     def override_get_db():   #Defines a dependency function that provides a database session
 
@@ -37,7 +37,7 @@ def client(session ):
     yield TestClient(app)   #TestClient  ───────►  FastAPI App
     #yield TestClient(app) pauses the client fixture and gives the client object to the test.
     
-@pytest.fixture(scope="module")
+@pytest.fixture
 def test_user(client):
     user_data = {"email" : "rj@gmail.com", "password" : "7890"}  #create a user and insert in test db.
     res = client.post("/users/" , json=user_data)
@@ -47,7 +47,17 @@ def test_user(client):
     new_user["password"] = user_data["password"]
     return new_user  #returns email and pwd of new user for test_login_user
 
-@pytest.fixture(scope="module")
+@pytest.fixture
+def test_user2(client):
+    user_data = {"email" : "abc@gmail.com", "password" : "78900"}  #create a user and insert in test db.
+    res = client.post("/users/" , json=user_data)
+    assert res.status_code == 201
+
+    new_user = res.json()
+    new_user["password"] = user_data["password"]
+    return new_user
+
+@pytest.fixture
 def token(test_user):
     return create_access_token({"user_id" : test_user["id"]})  #returns JWT . id is the unique identifier stored in the token as user_id
 
@@ -60,14 +70,21 @@ def authorized_client(client,token):
      yield client
 
      client.headers.pop("Authorization", None)  #prevents auth token leakage between tests
-     return client
+     return client  
+     
 
-@pytest.fixture  #Sample data to populate our db for testing test_get_post
-def test_posts(session,test_user): #session -> Gives a SQLAlchemy database session connected to the test database.
+@pytest.fixture #Sample data to populate our db for testing test_get_post
+def test_posts(session,test_user,test_user2): #session -> Gives a SQLAlchemy database session connected to the test database.
 
+#creates two SQLAlchemy Post objects in Python.
      session.add_all([models.Post(title = "first title",content = "first content", owner_id = test_user["id"]),
-                      models.Post(title="Second title" , content = "first content", owner_id = test_user["id"])])
+                      models.Post(title="Second title" , content = "second content", owner_id = test_user["id"]),
+                      models.Post(title="third title" , content = "third content", owner_id = test_user2["id"])])
 
      session.commit()
-     query = session.query(models.Post).all()
+     query = session.query(models.Post).all()  
      return query
+
+#test_posts creates models.Post objects, inserts them into the test 
+#database, queries them back as SQLAlchemy objects, and returns those 
+#objects to the test function. The test function then uses those objects to call and verify the real API.

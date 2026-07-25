@@ -1,0 +1,35 @@
+How is our actual api being tested??         
+       Pytest + TestClient runs your real API against a test database.
+         
+                 pytest
+                    │
+                    ▼
+        authorized_client.get("/posts/1")
+                    │
+                    ▼
+          TestClient (acts like Postman)
+                    │
+                    ▼
+          FastAPI application (app)
+                    │
+                    ▼
+        Router in posts.py  ←──── THIS IS YOUR ACTUAL CODE
+                    │
+                    ▼
+        Depends(get_db)
+                    │
+     dependency_overrides
+                    │
+                    ▼
+      override_get_db()  (test database)
+                    │
+                    ▼
+          Query fastapi_test
+                    │
+                    ▼
+      Return JSON response
+                    │
+                    ▼
+             res.json()
+
+            
