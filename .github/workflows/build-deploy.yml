@@ -34,10 +34,10 @@ jobs:
           - 5432:5432
 
         options: >-
-          --health-cmd pg_isready 
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+          --health-cmd "pg_isready"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout repository
@@ -67,15 +67,11 @@ jobs:
         run: |
           python -c "from App.config import settings; print('HOST =', settings.database_host); print('PORT =', settings.database_port); print('DB =', settings.database_name); print('USER =', settings.database_user)"
 
-      - name: Wait for PostgreSQL
+      - name: Check PostgreSQL
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
-          until pg_isready -h postgres -p 5432 -U $DATABASE_USER; do
-            echo "Waiting for PostgreSQL..."
-            sleep 2
-          done
+          pg_isready -h postgres -p 5432 || true
 
       - name: Run Tests
-        run: |
-          pytest -v
+        run: pytest -v

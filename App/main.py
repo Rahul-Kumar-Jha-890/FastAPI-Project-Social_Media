@@ -4,7 +4,7 @@ from .database import engine
 from .Routers import posts, users,auth,votes
 from fastapi.middleware.cors import CORSMiddleware
 
-models.Base.metadata.create_all(bind=engine) #Creates all database tables defined in your ORM models if they don't already exist.
+#models.Base.metadata.create_all(bind=engine) #Creates all database tables defined in your ORM models if they don't already exist.
 
 
 app = FastAPI()
