@@ -24,14 +24,17 @@ jobs:
     services:
       postgres:
         image: postgres:16
+
         env:
           POSTGRES_USER: ${{ secrets.DATABASE_USER }}
           POSTGRES_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           POSTGRES_DB: ${{ secrets.DATABASE_NAME }}
+
         ports:
           - 5432:5432
+
         options: >-
-          --health-cmd "pg_isready"
+          --health-cmd="pg_isready -U ${{ secrets.DATABASE_USER }}"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
@@ -40,7 +43,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python 3.12
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
@@ -49,19 +52,30 @@ jobs:
         run: python -m pip install --upgrade pip
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Show environment variables
-          run: |
-            echo "DATABASE_HOST=$DATABASE_HOST"
-            echo "DATABASE_PORT=$DATABASE_PORT"
-            echo "DATABASE_NAME=$DATABASE_NAME"
-            echo "DATABASE_USER=$DATABASE_USER"
-
-      - name: Show what Pydantic reads
-          run: |
-            python -c "from App.config import settings; print('HOST:', settings.database_host); print('PORT:', settings.database_port); print('DB:', settings.database_name); print('USER:', settings.database_user)"
-
-      - name: Install pytest
         run: |
+          pip install -r requirements.txt
           pip install pytest
-          pytest -v 
+
+      - name: Show environment variables
+        run: |
+          echo "DATABASE_HOST=$DATABASE_HOST"
+          echo "DATABASE_PORT=$DATABASE_PORT"
+          echo "DATABASE_NAME=$DATABASE_NAME"
+          echo "DATABASE_USER=$DATABASE_USER"
+
+      - name: Show Pydantic settings
+        run: |
+          python -c "from App.config import settings; print('HOST =', settings.database_host); print('PORT =', settings.database_port); print('DB =', settings.database_name); print('USER =', settings.database_user)"
+
+      - name: Wait for PostgreSQL
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          until pg_isready -h postgres -p 5432 -U $DATABASE_USER; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+      - name: Run Tests
+        run: |
+          pytest -v
