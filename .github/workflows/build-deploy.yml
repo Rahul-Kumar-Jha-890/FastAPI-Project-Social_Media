@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  job1:
+  build:
     runs-on: ubuntu-latest
 
     environment:
@@ -40,7 +40,7 @@ jobs:
           --health-retries 5
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -51,27 +51,59 @@ jobs:
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: |
           pip install -r requirements.txt
-          pip install pytest
+          pip install pytest psycopg2-binary
 
-      - name: Show environment variables
+      - name: Show Environment Variables
         run: |
           echo "DATABASE_HOST=$DATABASE_HOST"
           echo "DATABASE_PORT=$DATABASE_PORT"
           echo "DATABASE_NAME=$DATABASE_NAME"
           echo "DATABASE_USER=$DATABASE_USER"
 
-      - name: Show Pydantic settings
+      - name: Show Pydantic Settings
         run: |
-          python -c "from App.config import settings; print('HOST =', settings.database_host); print('PORT =', settings.database_port); print('DB =', settings.database_name); print('USER =', settings.database_user)"
+          python - <<EOF
+          from App.config import settings
+          print("HOST:", settings.database_host)
+          print("PORT:", settings.database_port)
+          print("DB:", settings.database_name)
+          print("USER:", settings.database_user)
+          EOF
 
-      - name: Check PostgreSQL
+      - name: Wait for PostgreSQL
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
-          pg_isready -h postgres -p 5432 || true
+
+          until pg_isready -h postgres -p 5432 -U "$DATABASE_USER"
+          do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+
+      - name: Test Database Connection
+        run: |
+          python - <<EOF
+          import psycopg2
+          from App.config import settings
+
+          print("Trying to connect...")
+
+          conn = psycopg2.connect(
+              host=settings.database_host,
+              port=settings.database_port,
+              database=settings.database_name + "_test",
+              user=settings.database_user,
+              password=settings.database_password
+          )
+
+          print("Database connection successful!")
+          conn.close()
+          EOF
 
       - name: Run Tests
-        run: pytest -v
+        run: |
+          pytest -x -vv
