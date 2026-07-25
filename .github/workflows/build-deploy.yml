@@ -50,6 +50,16 @@ jobs:
 
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Show environment variables
+          run: |
+            echo "DATABASE_HOST=$DATABASE_HOST"
+            echo "DATABASE_PORT=$DATABASE_PORT"
+            echo "DATABASE_NAME=$DATABASE_NAME"
+            echo "DATABASE_USER=$DATABASE_USER"
+
+      - name: Show what Pydantic reads
+          run: |
+            python -c "from App.config import settings; print('HOST:', settings.database_host); print('PORT:', settings.database_port); print('DB:', settings.database_name); print('USER:', settings.database_user)"
 
       - name: Install pytest
         run: |
