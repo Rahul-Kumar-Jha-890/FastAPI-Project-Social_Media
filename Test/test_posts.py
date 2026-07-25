@@ -2,7 +2,7 @@ from App import schemas
 import pytest
 
 #Every test insert 2 posts in our test db.
-"""def test_get_post(authorized_client,test_posts):
+def test_get_post(authorized_client,test_posts):
     res = authorized_client.get("/posts")
     #print(res.json())
     assert len(res.json()) == len(test_posts)
@@ -62,7 +62,7 @@ def test_delete_post_not_exist(authorized_client,test_posts):
 
 def test_delete_other_user_post(authorized_client,test_posts):
     res = authorized_client.delete(f"/posts/{test_posts[2].id}")
-    assert res.status_code == 403"""
+    assert res.status_code == 403
 
 def test_update_post(authorized_client,test_posts):
     data = {   #This is the new data we want the API to save
