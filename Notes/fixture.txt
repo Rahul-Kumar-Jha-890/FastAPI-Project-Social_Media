@@ -1,0 +1,30 @@
+pytest starts test
+        │
+        ▼
+session fixture
+        │
+drop_all()
+create_all()
+create db session
+yield db
+        │
+        ▼
+client fixture
+        │
+override get_db
+create TestClient
+yield client
+        │
+        ▼
+test_create_user(client)
+        │
+        ▼
+Test finishes
+        │
+client fixture ends
+        │
+session fixture resumes
+db.close()
+
+The session fixture creates the test database session, but override_get_db injects 
+that same session into your FastAPI endpoints. Without the override, the fixture's session exists, but your application never uses it.

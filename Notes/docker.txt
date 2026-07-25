@@ -1,0 +1,46 @@
+Workflow of dockerfile :-
+Step 1
+Download Python
+
+↓
+
+Step 2
+Copy requirements
+
+↓
+
+Step 3
+Install dependencies
+
+↓
+
+Step 4
+Copy project
+
+↓
+
+Image Created
+
+WORKFLOW:-
+When you run:
+
+docker compose up
+
+Docker:
+
+Reads docker-compose.yml.
+Pulls or builds the required images.
+Creates containers from those images.
+Connects the containers on a network.
+Starts PostgreSQL.
+Starts FastAPI.
+Keeps both services running until you stop them.
+
+That's the practical use of images and containers in your project.
+
+A simple way to remember it is:
+
+Image = the packaged application (like an executable installer or a blueprint).
+Container = the running application created from that package.
+
+You build an image once, but you can create and destroy containers from it as many times as you need.

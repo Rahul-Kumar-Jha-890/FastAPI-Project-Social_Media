@@ -1,0 +1,29 @@
+Pytest starts test_login_user.
+
+Needs client → runs session fixture.
+
+session recreates all tables and yields db.
+
+Runs client fixture.
+
+client overrides get_db and yields TestClient.
+
+Needs test_user → sends POST /users/.
+
+User is inserted into fastapi_test.
+
+test_user returns the created user dictionary.
+
+test_login_user sends POST /login.
+
+FastAPI authenticates the user and returns a JWT.
+
+Test decodes the JWT.
+
+Extracts user_id from the token.
+
+Compares it with the created user’s id.
+
+All assertions pass → test passes.
+
+Fixtures resume and the database session is closed.
