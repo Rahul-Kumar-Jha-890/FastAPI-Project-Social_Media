@@ -1,0 +1,11 @@
+name: Build and Deploy Codebase  #Name of our github workflow
+
+on: [push, pull_request]  #This tells GitHub when to run the workflow.
+
+jobs:
+  job1:
+    runs-on: ubuntu-latest  #GitHub starts a fresh Ubuntu virtual machine to execute this job.
+
+    steps:
+      - name: Pull git repository
+        uses: actions/checkout@v2  #This downloads (checks out) our GitHub repository into the runner so the workflow has access to your project files.
