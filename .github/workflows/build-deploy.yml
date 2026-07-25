@@ -4,6 +4,17 @@ on: [push, pull_request]  #This tells GitHub when to run the workflow.
 
 jobs:
   job1:
+    environment:
+      name : testing
+    env:
+      DATABASE_HOST :  ${{secrets.DATABASE_HOST}}
+      DATABASE_PORT : ${{secrets.DATABASE_PORT}}
+      DATABASE_NAME : ${{secrets.DATABASE_NAME}}
+      DATABASE_USER : ${{secrets.DATABASE_USER}}
+      DATABASE_PASSWORD : ${{secrets.DATABASE_PASSWORD}}
+      ACCESS_KEY : ${{secrets.ACCESS_KEY}}
+      ALGORITHM : ${{secrets.ALGORITHM}}
+      ACCESS_TOKEN_EXPIRE_MINUTES : ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
     runs-on: ubuntu-latest  #GitHub starts a fresh Ubuntu virtual machine to execute this job.
 
     steps:
