@@ -12,7 +12,7 @@ jobs:
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
       DATABASE_NAME: ${{secrets.DATABASE_NAME}}
       DATABASE_USER: ${{secrets.DATABASE_USER}}
-      SECRET_KEY: ${{secrets.ACCESS_KEY}}
+      ACCESS_KEY: ${{secrets.ACCESS_KEY}}
       ALGORITHM: ${{secrets.ALGORITHM}}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
 
