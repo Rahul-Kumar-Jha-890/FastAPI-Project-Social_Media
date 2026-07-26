@@ -11,7 +11,7 @@ jobs:
       DATABASE_PORT: ${{secrets.DATABASE_PORT}}
       DATABASE_PASSWORD: ${{secrets.DATABASE_PASSWORD}}
       DATABASE_NAME: ${{secrets.DATABASE_NAME}}
-      DATABASE_USER: ${{secrets.DATABASE_USERNAME}}
+      DATABASE_USER: ${{secrets.DATABASE_USER}}
       SECRET_KEY: ${{secrets.SECRET_KEY}}
       ALGORITHM: ${{secrets.ALGORITHM}}
       ACCESS_TOKEN_EXPIRE_MINUTES: ${{secrets.ACCESS_TOKEN_EXPIRE_MINUTES}}
@@ -34,10 +34,10 @@ jobs:
     steps:
       - name: pulling git repo
         uses: actions/checkout@v2
-      - name: Install python version 3.9
+      - name: Install python version 3.12
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: "3.12"
       - name: update pip
         run: python -m pip install --upgrade pip
       - name: install all dependencies
