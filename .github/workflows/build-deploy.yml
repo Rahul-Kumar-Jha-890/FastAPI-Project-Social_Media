@@ -12,10 +12,10 @@ jobs:
       name: testing
 
     env:
-      DATABASE_HOST: postgres
-      DATABASE_PORT: ${{ secrets.DATABASE_PORT }}
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
       DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
-      DATABASE_USER: ${{ secrets.DATABASE_USER }}
+      DATABASE_USER: postgres
       DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
       ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
       ALGORITHM: ${{ secrets.ALGORITHM }}
@@ -40,70 +40,61 @@ jobs:
           --health-retries=5
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Upgrade pip
-        run: python -m pip install --upgrade pip
-
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest psycopg2-binary
 
-      - name: Print environment
+      - name: Show environment
         run: |
-          python - <<EOF
-          import os
-          print("DATABASE_HOST =", repr(os.getenv("DATABASE_HOST")))
-          print("DATABASE_PORT =", repr(os.getenv("DATABASE_PORT")))
-          print("DATABASE_NAME =", repr(os.getenv("DATABASE_NAME")))
-          print("DATABASE_USER =", repr(os.getenv("DATABASE_USER")))
-          EOF
+          echo "HOST=$DATABASE_HOST"
+          echo "PORT=$DATABASE_PORT"
+          echo "DB=$DATABASE_NAME"
+          echo "USER=$DATABASE_USER"
 
-      - name: Print Pydantic settings
-        run: |
-          python - <<EOF
-          from App.config import settings
-          print("HOST =", repr(settings.database_host))
-          print("PORT =", repr(settings.database_port))
-          print("DB =", repr(settings.database_name))
-          print("USER =", repr(settings.database_user))
-          EOF
-
-      - name: Wait for PostgreSQL
+      - name: Install PostgreSQL client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
-          until pg_isready -h postgres -p 5432 -U postgres
-          do
-            echo "Waiting for PostgreSQL..."
+      - name: Wait for PostgreSQL
+        run: |
+          for i in {1..30}; do
+            echo "Attempt $i"
+            pg_isready -h localhost -p 5432 -U postgres && break
             sleep 2
           done
 
-      - name: Test database connection
+      - name: Test PostgreSQL Connection
         run: |
           python - <<EOF
           import psycopg2
-          from App.config import settings
 
           conn = psycopg2.connect(
-              host=settings.database_host,
-              port=settings.database_port,
-              database=settings.database_name + "_test",
-              user=settings.database_user,
-              password=settings.database_password
+              host="localhost",
+              port=5432,
+              database="${{ secrets.DATABASE_NAME }}_test",
+              user="postgres",
+              password="${{ secrets.DATABASE_PASSWORD }}"
           )
 
-          print("Database connection successful")
+          print("Database Connected Successfully")
           conn.close()
           EOF
 
       - name: Run Tests
-        run: pytest -v
+        run: |
+          pytest -v
+
+      - name: PostgreSQL Logs
+        if: failure()
+        run: |
+          docker ps -a
+          docker logs $(docker ps -aq --filter ancestor=postgres:16)
