@@ -86,3 +86,6 @@ jobs:
           tags: ${{secrets.DOCKER_HUB_USERNAME}}/fastapi 
           cache-from: type=registry,ref=user/app:latest
           cache-to: type=inline
+          
+      -  name: Trigger Render Deploy
+         run: curl -X POST ${{ secrets.RENDER_DEPLOY_HOOK }}
